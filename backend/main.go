@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"../backend/platform"
+	"Swipe-Files/backend/platform"
 )
 
 type FileInfoDTO struct {
