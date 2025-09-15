@@ -20,9 +20,10 @@ SwipeFiles is a Tinder-style file manager. The Go backend lists files and moves 
    ```bash
    cd backend
    go mod tidy
-   go run .
+   # Start HTTP API
+   go run ./cmd/server
    ```
-2. Backend will run at `http://localhost:8787`.
+2. Backend listens at `http://localhost:8787`.
 
 ### Frontend
 1. Open another terminal:
@@ -41,9 +42,31 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8787
 
 ### Usage
 - Open the frontend in browser.
-- Files from the chosen directory (default `~/Desktop`) will appear.
-- Click the trash button (or later swipe) to move files to the system Trash/Recycle Bin.
-- Files you keep remain untouched.
+- Files from the chosen directory (default `~/Downloads`) will appear.
+- Use ←/→ arrow keys or drag left/right to trash/keep a file.
+- Files you keep remain untouched; trashed files go to the OS Trash/Recycle Bin.
+
+## Project Structure
+```
+backend/
+  cmd/server/            # entrypoint: starts HTTP server
+  internal/
+    server/              # router construction
+    http/
+      handlers/          # /api/files, /api/trash
+      middleware/        # CORS
+      respond/           # JSON helpers
+    dto/                 # transport types (JSON)
+    util/                # path resolution, etc.
+  platform/              # OS-specific trash implementations
+
+frontend/
+  src/
+    app/                 # Next.js App Router pages
+    components/          # Card, FilePreview, ActionsBar
+    lib/                 # API client
+    utils/               # formatting helpers
+```
 
 ## License
 MIT
