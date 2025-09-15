@@ -1,3 +1,4 @@
+// formatBytes converts a byte count to a human-readable string.
 export function formatBytes(n: number) {
   if (n < 1024) return `${n} B`;
   const units = ["KB", "MB", "GB", "TB"];
@@ -9,6 +10,7 @@ export function formatBytes(n: number) {
   return `${n.toFixed(1)} ${units[i]}`;
 }
 
+// formatDate renders a user-friendly date from an ISO string.
 export function formatDate(iso: string) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
@@ -19,8 +21,8 @@ export function formatDate(iso: string) {
   });
 }
 
+// isImageByNameOrExt returns true when a filename or extension matches common image types.
 export function isImageByNameOrExt(name?: string, ext?: string) {
   const target = (ext || name || "").toLowerCase();
   return /\.(png|jpe?g|gif|webp|bmp|svg)$/.test(target);
 }
-

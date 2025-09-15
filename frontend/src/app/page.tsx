@@ -1,4 +1,6 @@
 "use client";
+// HomePage: orchestrates file loading, swipe interactions, and renders UI
+// using Card and ActionsBar components.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./main.css";

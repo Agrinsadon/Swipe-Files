@@ -1,4 +1,5 @@
 "use client";
+// ActionsBar contains the primary actions (Trash/Keep) and a usage hint.
 
 type Props = {
   onTrash: () => Promise<void> | void;
@@ -33,4 +34,3 @@ export function ActionsBar({ onTrash, onKeep, remaining }: Props) {
     </>
   );
 }
-

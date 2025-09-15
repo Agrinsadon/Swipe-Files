@@ -1,4 +1,6 @@
 "use client";
+// Card renders the active swipeable file tile, including TRASH/KEEP badges
+// and metadata. Gesture handling props are forwarded from the page container.
 
 import { CSSProperties } from "react";
 import { FileInfo } from "@/lib/api";
@@ -66,4 +68,3 @@ export function Card({
     </div>
   );
 }
-
