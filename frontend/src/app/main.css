@@ -1,0 +1,197 @@
+/* Peruslayout */
+:root {
+    --bg: #0b0c10;
+    --card: #111318;
+    --muted: #9aa0a6;
+    --text: #e8eaed;
+    --accent: #3b82f6;
+    --danger: #ef4444;
+    --ok: #22c55e;
+    --border: #23262d;
+    --shadow: 0 8px 30px rgba(0,0,0,.45);
+  }
+  
+  html, body {
+    height: 100%;
+    background: radial-gradient(1200px 800px at 50% -200px, #151922, #0b0c10);
+    color: var(--text);
+  }
+  
+  * { box-sizing: border-box; }
+  
+  .stage {
+    min-height: 100dvh;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .topbar {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  
+  .title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+  
+  .counter {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .center { text-align: center; }
+  .muted { color: var(--muted); }
+  .error { color: #ff6b6b; }
+  
+  /* Korttipino */
+  .stack {
+    position: relative;
+    width: min(92vw, 640px);
+    height: min(80vh, 560px);
+    perspective: 1200px;
+  }
+  
+  .card {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #141821, #0f1218);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    user-select: none;
+    touch-action: pan-y;
+    transition: transform 160ms ease-out;
+    overflow: hidden;
+  }
+  
+  /* Varjokortit (taustalla) */
+  .shadow-1 {
+    transform: translateY(8px) scale(.985);
+    opacity: .7;
+    filter: blur(.2px);
+  }
+  .shadow-2 {
+    transform: translateY(14px) scale(.972);
+    opacity: .5;
+    filter: blur(.3px);
+  }
+  
+  .card.dragging {
+    transition: none;
+    cursor: grabbing;
+  }
+  
+  .media {
+    display: grid;
+    place-items: center;
+    padding: 18px;
+  }
+  
+  .img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  
+  .file-fallback {
+    font-size: 64px;
+    color: #cbd5e1;
+  }
+  
+  /* Metatiedot alalaitaan */
+  .meta {
+    padding: 14px 18px 18px;
+    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+  }
+  .name {
+    font-weight: 600;
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  
+  /* Badge-tekstit TRASH/KEEP */
+  .badge {
+    position: absolute;
+    top: 14px;
+    padding: 6px 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    border-radius: 10px;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    transform: rotate(-6deg);
+    opacity: 0;
+  }
+  .badge-left {
+    left: 14px;
+    background: color-mix(in srgb, var(--danger) 30%, transparent);
+    border: 1px solid color-mix(in srgb, var(--danger) 60%, transparent);
+    color: #fecaca;
+  }
+  .badge-right {
+    right: 14px;
+    background: color-mix(in srgb, var(--ok) 25%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ok) 55%, transparent);
+    color: #bbf7d0;
+    transform: rotate(6deg);
+  }
+  
+  /* Painikkeet */
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: #12151c;
+    color: var(--text);
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 600;
+    box-shadow: 0 2px 0 rgba(255,255,255,.05) inset, var(--shadow);
+    transition: transform .06s ease, background .2s ease, border-color .2s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(1px) scale(.99); }
+  .btn.danger {
+    background: linear-gradient(180deg, #1a0f12, #140c0e);
+    border-color: color-mix(in srgb, var(--danger) 40%, var(--border));
+  }
+  
+  /* Vinkkiteksti */
+  .hint {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
+  
+  /* Pienet ruudut */
+  @media (max-width: 480px) {
+    .stack { height: 68vh; }
+    .badge { font-size: 12px; }
+  }
+  
