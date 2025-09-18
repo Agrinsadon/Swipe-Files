@@ -1,6 +1,4 @@
 "use client";
-// HomePage: orchestrates file loading, swipe interactions, and renders UI
-// using Card and ActionsBar components.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./main.css";
@@ -16,12 +14,12 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
 
   // Swipen tilat
-  const [idx, setIdx] = useState(0);               // mikä kortti on päällimmäisenä
-  const [dragX, setDragX] = useState(0);           // raahausetäisyys
+  const [idx, setIdx] = useState(0);          
+  const [dragX, setDragX] = useState(0);     
   const [dragging, setDragging] = useState(false);
   const [anim, setAnim] = useState<SwipeDir>(null);
   const startXRef = useRef<number | null>(null);
-  const threshold = 120;                            // kuinka pitkälle pitää vetää ennen hyväksyntää
+  const threshold = 120;              
 
   // Hae tiedostot
   useEffect(() => {
@@ -34,16 +32,28 @@ export default function HomePage() {
   const current = files[idx] || null;
   const remaining = Math.max(0, files.length - idx - 1);
 
-  // Onko tiedosto kuva?
   const isImage = useCallback((f: FileInfo | null) => {
     if (!f) return false;
     return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(f.ext || f.name);
   }, []);
 
-  // Jos sinulla on esikatselu-endpoint, määritä tähän
+  // Luo esikatselu-URL kuville backendin /api/open -endpointiin
   const getPreviewUrl = useCallback((f: FileInfo) => {
-    // Esimerkki: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/open?path=${encodeURIComponent(f.path)}`
-    return null; // palauta null jos ei ole esikatselua tarjolla
+    const base = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/+$/g, "");
+    if (!base) return null;
+    const target = (f.ext || f.name).toLowerCase();
+    const isImg = /\.(png|jpe?g|gif|webp|bmp|svg)$/.test(target);
+    const isPdf = /\.(pdf)$/.test(target);
+    const isVid = /\.(mp4|webm|ogv|ogg|mov|m4v)$/.test(target);
+    const isAud = /\.(mp3|wav|ogg|oga|m4a|aac)$/.test(target);
+    const isTxt = /\.(txt|md|markdown|json|log|csv|tsv|js|ts|jsx|tsx|py|go|rs|java|c|cpp|cs|sh|yml|yaml|ini|cfg|toml)$/.test(target);
+    const isOffice = /\.(docx|doc|dotx|xlsx|xls|pptx|ppt|odt|odp|ods)$/.test(target);
+    if (!(isImg || isPdf || isVid || isAud || isTxt || isOffice)) return null;
+    if (isOffice) {
+      // Convert office docs to PDF on-the-fly for inline viewing
+      return `${base}/api/convert?to=pdf&path=${encodeURIComponent(f.path)}`;
+    }
+    return `${base}/api/open?path=${encodeURIComponent(f.path)}`;
   }, []);
 
   // Roskikseen (vasen)
@@ -54,7 +64,6 @@ export default function HomePage() {
       await sendToTrash(f.path);
       // Poistetaan listasta ja pidetään sama idx (seuraava siirtyy tilalle)
       setFiles((prev) => prev.filter((x, i) => i !== idx));
-      // Älä kasvattele idx:ää jos poistit nykyisen; korttipino kompressoituu
       setAnim(null);
       setDragX(0);
     } catch (e) {
@@ -62,10 +71,10 @@ export default function HomePage() {
     }
   }, [files, idx]);
 
-  // Säilytä/ohita (oikea)
+  // Säilytä (oikea)
   const keepCurrent = useCallback(() => {
     if (idx < files.length) {
-      setIdx((i) => Math.min(i + 1, files.length)); // seuraava kortti
+      setIdx((i) => Math.min(i + 1, files.length));
       setAnim(null);
       setDragX(0);
     }
@@ -158,14 +167,11 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Pino (renderöi pari seuraavaa varjoksi) */}
       <div className="stack">
-        {/* Seuraavat kortit pienellä siirrolla taakse */}
         {files.slice(idx + 1, idx + 3).map((f, i) => (
           <div key={f.path} className={`card shadow-${i + 1}`} aria-hidden />
         ))}
 
-        {/* Aktiivinen kortti */}
         <Card
           file={current}
           style={cardStyle}

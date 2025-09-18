@@ -26,3 +26,24 @@ export function isImageByNameOrExt(name?: string, ext?: string) {
   const target = (ext || name || "").toLowerCase();
   return /\.(png|jpe?g|gif|webp|bmp|svg)$/.test(target);
 }
+
+// Additional helpers for media/text/office detection by extension.
+export function isVideoByNameOrExt(name?: string, ext?: string) {
+  const target = (ext || name || "").toLowerCase();
+  return /\.(mp4|webm|ogv|ogg|mov|m4v)$/i.test(target);
+}
+
+export function isAudioByNameOrExt(name?: string, ext?: string) {
+  const target = (ext || name || "").toLowerCase();
+  return /\.(mp3|wav|ogg|oga|m4a|aac)$/i.test(target);
+}
+
+export function isTextByNameOrExt(name?: string, ext?: string) {
+  const target = (ext || name || "").toLowerCase();
+  return /\.(txt|md|markdown|json|log|csv|tsv|js|ts|jsx|tsx|py|go|rs|java|c|cpp|cs|sh|yml|yaml|ini|cfg|toml)$/i.test(target);
+}
+
+export function isOfficeByNameOrExt(name?: string, ext?: string) {
+  const target = (ext || name || "").toLowerCase();
+  return /\.(docx|doc|dotx|xlsx|xls|pptx|ppt|odt|odp|ods)$/i.test(target);
+}
