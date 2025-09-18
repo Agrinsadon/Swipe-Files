@@ -4,13 +4,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./main.css";
-import { fetchFiles, FileInfo, sendToTrash } from "@/lib/api";
+import { fetchFiles, fetchRecents, FileInfo, sendToTrash } from "@/lib/api";
 import { Card } from "@/components/Card";
 import { ActionsBar } from "@/components/ActionsBar";
+import { ChevronDown } from "lucide-react";
 
 type SwipeDir = "left" | "right" | null;
 
 export default function HomePage() {
+  // Kansio-valinta. "Äskeiset" = viimeisimmät lataukset (~/Downloads), lajittelu uusimmat ensin.
+  const [folder, setFolder] = useState<"Äskeiset" | "Lataukset" | "Työpöytä">("Äskeiset");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [files, setFiles] = useState<FileInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,13 +27,26 @@ export default function HomePage() {
   const startXRef = useRef<number | null>(null);
   const threshold = 120;              
 
-  // Hae tiedostot
+  // Hae tiedostot valinnan mukaan:
+  //  - Äskeiset: useista juurista rekursiivisesti (backend /api/recents)
+  //  - Lataukset/Työpöytä: suora listaus yhdestä juuresta
   useEffect(() => {
-    fetchFiles("~/Downloads")
-      .then((list) => setFiles(list))
-      .catch((e) => setError(String(e)))
-      .finally(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    setError(null);
+    setIdx(0);
+    if (folder === "Äskeiset") {
+      fetchRecents(300, 2, ["~/Downloads", "~/Desktop", "~/Documents", "~/Pictures"]) 
+        .then((list) => setFiles(list))
+        .catch((e) => setError(String(e)))
+        .finally(() => setLoading(false));
+    } else {
+      const p = folder === "Lataukset" ? "~/Downloads" : "~/Desktop";
+      fetchFiles(p, 500)
+        .then((list) => setFiles(list))
+        .catch((e) => setError(String(e)))
+        .finally(() => setLoading(false));
+    }
+  }, [folder]);
 
   const current = files[idx] || null;
   const remaining = Math.max(0, files.length - idx - 1);
@@ -136,8 +153,11 @@ export default function HomePage() {
   if (!current) {
     return (
       <main className="stage">
-        <h1 className="title">Tiedostot</h1>
-        <p className="center">Ei enempää kortteja. Kansiot nuoltu puhtaaksi. ✅</p>
+        <h1 className="title">Ei enempää kortteja. Tiedostot nuoltu puhtaaksi. ✅
+        </h1>
+        <p className="center">
+        Sulje selain tai lataa sivu uudelleen aloittaaksesi alusta.
+        </p>
       </main>
     );
   }
@@ -163,7 +183,38 @@ export default function HomePage() {
   return (
     <main className="stage">
       <header className="topbar">
-        <h1 className="title">Tiedostot</h1>
+        <div className="title folder-select">
+          <button
+            type="button"
+            className="folder-btn"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-haspopup="listbox"
+            aria-expanded={menuOpen}
+            aria-label="Vaihda kansiota"
+          >
+            {folder}
+            <ChevronDown size={18} className="chev" />
+          </button>
+          {menuOpen && (
+            <ul className="folder-menu" role="listbox" aria-label="Kansiot">
+              {(["Äskeiset", "Lataukset", "Työpöytä"] as const).map((opt) => (
+                <li key={opt}>
+                  <button
+                    className={`folder-opt ${folder === opt ? "active" : ""}`}
+                    role="option"
+                    aria-selected={folder === opt}
+                    onClick={() => {
+                      setFolder(opt);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    {opt}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <div className="counter">
           {idx + 1}/{files.length}
         </div>

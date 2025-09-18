@@ -21,7 +21,7 @@
   /* Päänäyttämö: korttipino + toiminnot */
   .stage {
     min-height: 100dvh;
-    max-width: 720px;
+    max-width: 630px;
     margin: 0 auto;
     padding: 24px 16px 64px;
     display: flex;
@@ -36,6 +36,46 @@
     justify-content: space-between;
     margin-bottom: 16px;
   }
+
+  /* Kansio-valitsin otsikon yhteyteen */
+  .folder-select { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+  .folder-btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: #12151c;
+    color: var(--text);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .folder-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: #0f1218;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 6px;
+    list-style: none;
+    margin: 0;
+    min-width: 160px;
+    z-index: 10;
+  }
+  .folder-opt {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    color: var(--text);
+    border: 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
+  .folder-opt:hover { background: rgba(255,255,255,.04); }
+  .folder-opt.active { background: rgba(59,130,246,.15); }
   
   .title {
     font-size: 22px;

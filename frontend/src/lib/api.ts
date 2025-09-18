@@ -8,10 +8,28 @@ export type FileInfo = {
 };
 
 // fetchFiles: hae hakemiston tiedostot backendistä (uusin ensin).
-export async function fetchFiles(dir: string): Promise<FileInfo[]> {
+export async function fetchFiles(dir: string, limit?: number): Promise<FileInfo[]> {
     const base = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/+$/g, "");
     if (!base) throw new Error("NEXT_PUBLIC_BACKEND_URL puuttuu");
-    const url = `${base}/api/files?dir=${encodeURIComponent(dir)}`;
+    const url = `${base}/api/files?dir=${encodeURIComponent(dir)}${
+      typeof limit === "number" && limit > 0 ? `&limit=${limit}` : ""
+    }`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) {
+        const txt = await res.text().catch(() => "");
+        throw new Error(`Virhe ${res.status}: ${txt}`);
+    }
+    return res.json();
+}
+
+export async function fetchRecents(limit?: number, maxDepth?: number, roots?: string[]): Promise<FileInfo[]> {
+    const base = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/+$/g, "");
+    if (!base) throw new Error("NEXT_PUBLIC_BACKEND_URL puuttuu");
+    const params = new URLSearchParams();
+    if (typeof limit === "number" && limit > 0) params.set("limit", String(limit));
+    if (typeof maxDepth === "number" && maxDepth >= 0) params.set("maxDepth", String(maxDepth));
+    if (roots && roots.length) params.set("dirs", roots.join(","));
+    const url = `${base}/api/recents?${params.toString()}`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
         const txt = await res.text().catch(() => "");
