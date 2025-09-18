@@ -8,22 +8,21 @@ import (
     "Swipe-Files/backend/internal/util"
 )
 
-// Open serves the file bytes for a given path so the frontend can preview
-// images (and other inline-viewable types). Query: ?path=... (absolute or ~).
-// Uses util.ResolvePath to expand ~ and make absolute, then serves inline.
+// Open: palvelee tiedoston tavut esikatselua varten.
+// Kysely: ?path=... (absoluuttinen tai ~). Käyttää ResolvePathia, palvelee inline.
 func Open(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodOptions {
-        // CORS preflight handled by middleware, but keep explicit return.
+        // CORS-esipyyntö; palautetaan nopeasti.
         w.WriteHeader(http.StatusNoContent)
         return
     }
     if r.Method != http.MethodGet {
-        http.Error(w, "GET only", http.StatusMethodNotAllowed)
+        http.Error(w, "vain GET", http.StatusMethodNotAllowed)
         return
     }
     p := r.URL.Query().Get("path")
     if p == "" {
-        http.Error(w, "missing path", http.StatusBadRequest)
+        http.Error(w, "path puuttuu", http.StatusBadRequest)
         return
     }
     abs, err := util.ResolvePath(p)
@@ -32,18 +31,18 @@ func Open(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Provide clearer 404s instead of default text from ServeFile.
+    // Selkeämmät 404-viestit kuin ServeFile:n oletus.
     if st, err := os.Stat(abs); err != nil || st.IsDir() {
         if err != nil {
-            http.Error(w, "not found: "+abs, http.StatusNotFound)
+            http.Error(w, "ei löytynyt: "+abs, http.StatusNotFound)
             return
         }
-        http.Error(w, "path is a directory: "+abs, http.StatusBadRequest)
+        http.Error(w, "polku on hakemisto: "+abs, http.StatusBadRequest)
         return
     }
 
-    // Force inline display when possible (images, pdf, etc.).
+    // Pyydä selain näyttämään inline (kuvat, PDF, jne.).
     w.Header().Set("Content-Disposition", "inline; filename=\""+filepath.Base(abs)+"\"")
-    // CORS headers are set by middleware.WithCORS in the router.
+    // CORS-otsikot lisätään routerissa (middleware.WithCORS).
     http.ServeFile(w, r, abs)
 }

@@ -1,9 +1,9 @@
-// Package dto defines transport data structures for JSON responses.
+// Package dto: JSON-siirtorakenteet frontendin ja backendin välillä.
 package dto
 
 import "time"
 
-// FileInfoDTO mirrors frontend expectations for file listing items.
+// FileInfoDTO: vastaa frontendin odottamaa tiedostolistan rakennetta.
 type FileInfoDTO struct {
     Name    string    `json:"name"`
     Path    string    `json:"path"`

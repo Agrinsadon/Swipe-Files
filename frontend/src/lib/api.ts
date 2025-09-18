@@ -1,3 +1,4 @@
+// FileInfo: backendin palauttama tiedostometa listauksessa.
 export type FileInfo = {
     name: string;
     path: string;
@@ -6,6 +7,7 @@ export type FileInfo = {
     modTime: string;
 };
 
+// fetchFiles: hae hakemiston tiedostot backendistä (uusin ensin).
 export async function fetchFiles(dir: string): Promise<FileInfo[]> {
     const base = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/+$/g, "");
     if (!base) throw new Error("NEXT_PUBLIC_BACKEND_URL puuttuu");
@@ -13,11 +15,12 @@ export async function fetchFiles(dir: string): Promise<FileInfo[]> {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
         const txt = await res.text().catch(() => "");
-        throw new Error(`Error ${res.status}: ${txt}`);
+        throw new Error(`Virhe ${res.status}: ${txt}`);
     }
     return res.json();
 }
 
+// sendToTrash: siirrä tiedosto roskakoriin palvelimen kautta.
 export async function sendToTrash(path: string): Promise<void> {
     const base = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/+$/g, "");
     if (!base) throw new Error("NEXT_PUBLIC_BACKEND_URL puuttuu");
@@ -28,6 +31,6 @@ export async function sendToTrash(path: string): Promise<void> {
     });
     if (!res.ok) {
         const txt = await res.text().catch(() => "");
-        throw new Error(`Trash failed ${res.status}: ${txt}`);
+        throw new Error(`Roskikseen siirto epäonnistui ${res.status}: ${txt}`);
     }
 }

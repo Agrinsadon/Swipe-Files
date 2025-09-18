@@ -1,5 +1,5 @@
-/* Peruslayout */
 :root {
+    /* Teemavärit ja perusvarjot: keskitetyt muuttujat */
     --bg: #0b0c10;
     --card: #111318;
     --muted: #9aa0a6;
@@ -10,15 +10,15 @@
     --border: #23262d;
     --shadow: 0 8px 30px rgba(0,0,0,.45);
   }
-  
+
+  /* Perusasettelu ja tausta */
   html, body {
-    height: 100%;
     background: radial-gradient(1200px 800px at 50% -200px, #151922, #0b0c10);
     color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
   
-  * { box-sizing: border-box; }
-  
+  /* Päänäyttämö: korttipino + toiminnot */
   .stage {
     min-height: 100dvh;
     max-width: 720px;
@@ -52,7 +52,7 @@
   .muted { color: var(--muted); }
   .error { color: #ff6b6b; }
   
-  /* Korttipino */
+  /* Korttipino, antaa 3D-perspektiivin pyyhkäisyille */
   .stack {
     position: relative;
     width: min(92vw, 640px);
@@ -60,6 +60,7 @@
     perspective: 1200px;
   }
   
+  /* Kortti: grid (media + meta), pyöristykset, liike */
   .card {
     position: absolute;
     inset: 0;
@@ -75,7 +76,6 @@
     overflow: hidden;
   }
   
-  /* Varjokortit (taustalla) */
   .shadow-1 {
     transform: translateY(8px) scale(.985);
     opacity: .7;
@@ -92,10 +92,20 @@
     cursor: grabbing;
   }
   
+  /* Media-alue: keskittää esikatselun */
   .media {
     display: grid;
     place-items: center;
     padding: 18px;
+    overflow: auto;
+  }
+  /* For embedded docs like PDF */
+  .doc {
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 16px;
+    background: #0b0c10;
   }
   
   .img {
@@ -105,13 +115,47 @@
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,.06);
   }
+  .media-box {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.06);
+    background: #0b0c10;
+  }
+  .audio {
+    width: 100%;
+  }
   
   .file-fallback {
     font-size: 64px;
     color: #cbd5e1;
   }
+  .preview-note {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .preview-link {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  .pre {
+    width: 100%;
+    max-height: 100%;
+    overflow: auto;
+    background: #0b0c10;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.06);
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
   
-  /* Metatiedot alalaitaan */
   .meta {
     padding: 14px 18px 18px;
     border-top: 1px solid var(--border);
@@ -130,7 +174,6 @@
     margin-top: 4px;
   }
   
-  /* Badge-tekstit TRASH/KEEP */
   .badge {
     position: absolute;
     top: 14px;
@@ -157,7 +200,6 @@
     transform: rotate(6deg);
   }
   
-  /* Painikkeet */
   .actions {
     display: flex;
     gap: 12px;
@@ -181,7 +223,6 @@
     border-color: color-mix(in srgb, var(--danger) 40%, var(--border));
   }
   
-  /* Vinkkiteksti */
   .hint {
     margin-top: 8px;
     color: var(--muted);
@@ -189,7 +230,6 @@
     text-align: center;
   }
   
-  /* Pienet ruudut */
   @media (max-width: 480px) {
     .stack { height: 68vh; }
     .badge { font-size: 12px; }

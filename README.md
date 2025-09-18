@@ -1,17 +1,24 @@
 # SwipeFiles
 
-SwipeFiles is a Tinder-style file manager. The Go backend lists files and moves unwanted ones to the system Trash/Recycle Bin. The Next.js (React + TypeScript) frontend displays files and lets users quickly keep or delete them with a simple swipe or click.
+Tinder-style file cleanup: swipe through files with previews and remove or keep them in one gesture. A Go backend handles file listing and conversion, while a Next.js frontend renders the cards and swipe interactions.
 
 ## Features
-- Go backend with cross-platform Trash support (macOS, Linux, Windows).
-- REST API for listing files and sending them to Trash.
-- Next.js frontend with React + TypeScript.
-- Simple interface to keep or delete files.
+- Fast swipe UI (mouse, touch, arrow keys)
+- Live previews in‑app:
+  - Images: png, jpg, jpeg, gif, webp, bmp, svg
+  - PDF: embedded viewer
+  - Video: mp4, webm, ogv/ogg, mov, m4v
+  - Audio: mp3, wav, ogg/oga, m4a, aac
+  - Text/logs: txt, md, json, csv/tsv, etc. (first ~64KB)
+  - Office: docx, dotx, xlsx, pptx, … converted to PDF server‑side (LibreOffice)
+- Go backend with cross‑platform Trash support (macOS, Linux, Windows)
+- Simple REST API
 
 ## Requirements
 - Go 1.22+
 - Node.js 18+
 - npm or yarn
+ - LibreOffice/soffice on the server (only for Office previews)
 
 ## Getting Started
 
@@ -32,7 +39,7 @@ SwipeFiles is a Tinder-style file manager. The Go backend lists files and moves 
    npm install
    npm run dev
    ```
-2. Frontend will run at `http://localhost:3000`.
+2. Frontend runs at `http://localhost:3000`.
 
 ### Configuration
 Create `frontend/.env.local`:
@@ -41,19 +48,19 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:8787
 ```
 
 ### Usage
-- Open the frontend in browser.
-- Files from the chosen directory (default `~/Downloads`) will appear.
-- Use ←/→ arrow keys or drag left/right to trash/keep a file.
-- Files you keep remain untouched; trashed files go to the OS Trash/Recycle Bin.
+- Open the frontend in a browser.
+- Files from the chosen directory (default `~/Downloads`) appear as cards.
+- Previews open inline for images/PDF/video/audio/text and Office (PDF convert).
+- Use ←/→ or drag to Trash/Keep. Trashed files go to the OS Trash/Recycle Bin.
 
 ## Project Structure
 ```
 backend/
-  cmd/server/            # entrypoint: starts HTTP server
+  main.go                # entrypoint: starts HTTP server
   internal/
     server/              # router construction
     http/
-      handlers/          # /api/files, /api/trash
+      handlers/          # /api/files, /api/trash, /api/open, /api/convert
       middleware/        # CORS
       respond/           # JSON helpers
     dto/                 # transport types (JSON)

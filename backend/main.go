@@ -1,3 +1,4 @@
+// Pääohjelma: käynnistää HTTP-palvelimen.
 package main
 
 import (
@@ -10,6 +11,6 @@ import (
 func main() {
 	mux := server.NewMux()
 	addr := ":8787"
-	log.Printf("Backend up at %s", addr)
+	log.Printf("Backend käynnissä %s", addr)
 	log.Fatal(http.ListenAndServe(addr, mux))
 }

@@ -1,5 +1,5 @@
-// Command server provides the HTTP API for the Swipe-Files backend.
-// It wires the HTTP mux from internal/server and starts listening.
+// Komentorivisovellus: käynnistää Swipe-Files backendin HTTP-rajapinnan.
+// Kytkee reitittimen (internal/server) ja alkaa kuunnella.
 package main
 
 import (
@@ -12,6 +12,6 @@ import (
 func main() {
     mux := server.NewMux()
     addr := ":8787"
-    log.Printf("Backend up at %s", addr)
+    log.Printf("Backend käynnissä %s", addr)
     log.Fatal(http.ListenAndServe(addr, mux))
 }

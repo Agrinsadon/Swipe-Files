@@ -1,5 +1,6 @@
 "use client";
-
+// Card: näyttää pyyhkäistävän tiedostokortin ja metatiedot.
+// Miksi: UI-komponentti erillään sivulogiikasta; eleet välitetään propseina.
 import { CSSProperties } from "react";
 import { FileInfo } from "@/lib/api";
 import { FilePreview } from "@/components/FilePreview";

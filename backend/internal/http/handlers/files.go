@@ -1,4 +1,4 @@
-// Package handlers contains HTTP handler functions for API endpoints.
+// Package handlers: HTTP-käsittelijät API-reiteille.
 package handlers
 
 import (
@@ -13,9 +13,9 @@ import (
     "Swipe-Files/backend/internal/http/respond"
 )
 
-// ListFiles responds with a JSON array of file metadata for the requested
-// directory (query param `dir`). It sorts results by modification time descending
-// and optionally limits results via `?limit=N`.
+// ListFiles: palauttaa JSON-listan tiedostoista annetusta hakemistosta (`?dir=`).
+// Ei palauta kansioita. Lajittelee muokkausajan mukaan (uusin ensin).
+// Valinnainen rajoitus: `?limit=N`.
 func ListFiles(w http.ResponseWriter, r *http.Request) {
     dir := r.URL.Query().Get("dir")
     abs, err := util.ResolvePath(dir)

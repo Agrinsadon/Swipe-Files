@@ -16,16 +16,15 @@ import (
     "Swipe-Files/backend/internal/util"
 )
 
-// Convert converts office-like documents to PDF using LibreOffice (soffice) if available.
-// Only supports to=pdf. Query: ?path=...&to=pdf
-// Returns 501 if conversion tool not present.
+// Convert: muuntaa toimistoasiakirjan PDF:ksi LibreOfficella (soffice), jos saatavilla.
+// Vain to=pdf tuettu. Kysely: ?path=...&to=pdf. Palauttaa 501 jos muunnostyökalu puuttuu.
 func Convert(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodOptions {
         w.WriteHeader(http.StatusNoContent)
         return
     }
     if r.Method != http.MethodGet {
-        http.Error(w, "GET only", http.StatusMethodNotAllowed)
+        http.Error(w, "vain GET", http.StatusMethodNotAllowed)
         return
     }
 
@@ -34,12 +33,12 @@ func Convert(w http.ResponseWriter, r *http.Request) {
         to = "pdf"
     }
     if to != "pdf" {
-        http.Error(w, "unsupported target format", http.StatusBadRequest)
+        http.Error(w, "kohdeformaattia ei tueta", http.StatusBadRequest)
         return
     }
     p := r.URL.Query().Get("path")
     if p == "" {
-        http.Error(w, "missing path", http.StatusBadRequest)
+        http.Error(w, "path puuttuu", http.StatusBadRequest)
         return
     }
     abs, err := util.ResolvePath(p)
@@ -50,20 +49,20 @@ func Convert(w http.ResponseWriter, r *http.Request) {
     st, err := os.Stat(abs)
     if err != nil || st.IsDir() {
         if err != nil {
-            http.Error(w, "not found: "+abs, http.StatusNotFound)
+            http.Error(w, "ei löytynyt: "+abs, http.StatusNotFound)
             return
         }
-        http.Error(w, "path is a directory: "+abs, http.StatusBadRequest)
+        http.Error(w, "polku on hakemisto: "+abs, http.StatusBadRequest)
         return
     }
 
-    // Check for soffice/libreoffice
+    // Etsi soffice/libreoffice-binääri
     bin, err := exec.LookPath("soffice")
     if err != nil {
         if b2, err2 := exec.LookPath("libreoffice"); err2 == nil {
             bin = b2
         } else {
-            // Try common install locations
+            // Kokeile tyypillisiä asennuspolkuja
             candidates := []string{
                 "/opt/homebrew/bin/soffice",
                 "/usr/local/bin/soffice",
@@ -91,14 +90,14 @@ func Convert(w http.ResponseWriter, r *http.Request) {
                 }
             }
             if bin == "" {
-                // Return a helpful 501 JSON error for admins
-                msg := "server conversion not available: install LibreOffice (soffice) on the server"
+                // Palauta selkeä 501-virhe ylläpidolle
+                msg := "palvelinmuunnos ei käytettävissä: asenna LibreOffice (soffice) palvelimelle"
                 if runtime.GOOS == "darwin" {
-                    msg += "; e.g. brew install --cask libreoffice"
+                    msg += "; esim. brew install --cask libreoffice"
                 } else if runtime.GOOS == "linux" {
-                    msg += "; e.g. sudo apt-get install -y libreoffice"
+                    msg += "; esim. sudo apt-get install -y libreoffice"
                 } else if runtime.GOOS == "windows" {
-                    msg += "; download from https://www.libreoffice.org/download/"
+                    msg += "; lataa: https://www.libreoffice.org/download/"
                 }
                 respond.JSON(w, map[string]string{"error": msg}, http.StatusNotImplemented)
                 return
@@ -106,7 +105,7 @@ func Convert(w http.ResponseWriter, r *http.Request) {
         }
     }
 
-    // Cache key based on path and modtime
+    // Välimuistiavain polusta ja muokkausajasta
     h := sha1.New()
     _, _ = h.Write([]byte(abs))
     _, _ = h.Write([]byte(st.ModTime().UTC().Format(time.RFC3339Nano)))
@@ -116,15 +115,15 @@ func Convert(w http.ResponseWriter, r *http.Request) {
     outPath := filepath.Join(outDir, key+".pdf")
 
     if _, err := os.Stat(outPath); err != nil {
-        // Not cached; convert
+        // Ei välimuistissa; muunna
         cmd := exec.Command(bin, "--headless", "--convert-to", "pdf", "--outdir", outDir, abs)
-        // Some environments require HOME set
+        // Joissain ympäristöissä HOME tarvitaan
         cmd.Env = append(os.Environ(), "HOME="+os.TempDir())
         if out, err := cmd.CombinedOutput(); err != nil {
-            http.Error(w, fmt.Sprintf("conversion failed: %v: %s", err, string(out)), http.StatusInternalServerError)
+            http.Error(w, fmt.Sprintf("muunnos epäonnistui: %v: %s", err, string(out)), http.StatusInternalServerError)
             return
         }
-        // LibreOffice names output as <basename>.pdf — rename to our cache path
+        // LibreOffice nimeää tulosteen <nimi>.pdf — uudelleennimeä välimuistipolkuun
         produced := filepath.Join(outDir, strings.TrimSuffix(filepath.Base(abs), filepath.Ext(abs))+".pdf")
         if produced != outPath {
             _ = os.Rename(produced, outPath)

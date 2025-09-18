@@ -1,5 +1,6 @@
 "use client";
-// ActionsBar contains the primary actions (Trash/Keep) and a usage hint.
+// ActionsBar: toimintonapit (Poista/Säilytä) ja lyhyt vinkkiteksti.
+// Miksi: erottaa ohjaimet sivulogiikasta; komponentti on uudelleenkäytettävä.
 
 type Props = {
   onTrash: () => Promise<void> | void;

@@ -1,9 +1,9 @@
-// Package middleware contains HTTP middleware used across endpoints.
+// Package middleware: jaetut HTTP-väliohjelmat (CORS ym.).
 package middleware
 
 import "net/http"
 
-// WithCORS adds permissive CORS headers and handles OPTIONS preflight.
+// WithCORS: lisää sallitut CORS-otsikot ja käsittelee OPTIONS-esipyynnöt.
 func WithCORS(next http.HandlerFunc) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Access-Control-Allow-Origin", "*")

@@ -1,4 +1,4 @@
-// formatBytes converts a byte count to a human-readable string.
+// formatBytes: tavumäärä ihmisen luettavaan muotoon.
 export function formatBytes(n: number) {
   if (n < 1024) return `${n} B`;
   const units = ["KB", "MB", "GB", "TB"];
@@ -10,7 +10,7 @@ export function formatBytes(n: number) {
   return `${n.toFixed(1)} ${units[i]}`;
 }
 
-// formatDate renders a user-friendly date from an ISO string.
+// formatDate: muuntaa ISO-ajan selkeäksi päivämääräksi.
 export function formatDate(iso: string) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
@@ -21,13 +21,13 @@ export function formatDate(iso: string) {
   });
 }
 
-// isImageByNameOrExt returns true when a filename or extension matches common image types.
+// isImageByNameOrExt: tosi jos nimi/pääte vastaa yleisiä kuvamuotoja.
 export function isImageByNameOrExt(name?: string, ext?: string) {
   const target = (ext || name || "").toLowerCase();
   return /\.(png|jpe?g|gif|webp|bmp|svg)$/.test(target);
 }
 
-// Additional helpers for media/text/office detection by extension.
+// Apuja eri tiedostotyyppien tunnistukseen päätteen perusteella.
 export function isVideoByNameOrExt(name?: string, ext?: string) {
   const target = (ext || name || "").toLowerCase();
   return /\.(mp4|webm|ogv|ogg|mov|m4v)$/i.test(target);

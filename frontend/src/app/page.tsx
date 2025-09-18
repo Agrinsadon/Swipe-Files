@@ -1,4 +1,6 @@
 "use client";
+// HomePage: kokoaa sovelluksen tilan (lista + pyyhkäisyt) ja UI:n (Card + ActionsBar).
+// Miksi: sivutason tila ja ohjaus yhdessä paikassa.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./main.css";

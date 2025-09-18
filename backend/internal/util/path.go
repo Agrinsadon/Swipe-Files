@@ -1,4 +1,4 @@
-// Package util contains internal helpers not specific to HTTP.
+// Package util: sisäiset apurit (ei HTTP-spesifejä).
 package util
 
 import (
@@ -7,7 +7,7 @@ import (
     "strings"
 )
 
-// ResolvePath expands ~ and returns an absolute path. Relative paths are resolved from HOME.
+// ResolvePath: laajentaa ~ ja palauttaa absoluuttisen polun. Suhteelliset ratkaistaan HOME:sta.
 func ResolvePath(p string) (string, error) {
     home, _ := os.UserHomeDir()
     if p == "" {
