@@ -19,7 +19,8 @@ export async function fetchFiles(dir: string, limit?: number): Promise<FileInfo[
         const txt = await res.text().catch(() => "");
         throw new Error(`Virhe ${res.status}: ${txt}`);
     }
-    return res.json();
+    const data = await res.json().catch(() => null);
+    return Array.isArray(data) ? (data as FileInfo[]) : [];
 }
 
 export async function fetchRecents(limit?: number, maxDepth?: number, roots?: string[]): Promise<FileInfo[]> {
@@ -35,7 +36,8 @@ export async function fetchRecents(limit?: number, maxDepth?: number, roots?: st
         const txt = await res.text().catch(() => "");
         throw new Error(`Virhe ${res.status}: ${txt}`);
     }
-    return res.json();
+    const data = await res.json().catch(() => null);
+    return Array.isArray(data) ? (data as FileInfo[]) : [];
 }
 
 // sendToTrash: siirrä tiedosto roskakoriin palvelimen kautta.

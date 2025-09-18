@@ -57,7 +57,8 @@ func Recents(w http.ResponseWriter, r *http.Request) {
 
     // Käydään läpi juuret, kerätään tiedostot, järjestetään uusin ensin.
     seen := make(map[string]struct{})
-    var out []dto.FileInfoDTO
+    // Ensure empty JSON array ([]) instead of null when no files
+    out := make([]dto.FileInfoDTO, 0)
 
     for _, root := range roots {
         abs, err := util.ResolvePath(root)
@@ -140,4 +141,3 @@ func splitPathClean(p string) []string {
     }
     return parts
 }
-

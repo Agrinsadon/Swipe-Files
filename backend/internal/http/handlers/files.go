@@ -35,7 +35,8 @@ func ListFiles(w http.ResponseWriter, r *http.Request) {
         }
     }
 
-    var out []dto.FileInfoDTO
+    // Ensure empty JSON array ([]) instead of null when no files
+    out := make([]dto.FileInfoDTO, 0)
     for _, e := range entries {
         if e.IsDir() {
             continue
