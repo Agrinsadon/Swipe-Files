@@ -51,11 +51,6 @@ export default function HomePage() {
   const current = files[idx] || null;
   const remaining = Math.max(0, files.length - idx - 1);
 
-  const isImage = useCallback((f: FileInfo | null) => {
-    if (!f) return false;
-    return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(f.ext || f.name);
-  }, []);
-
   // Luo esikatselu-URL kuville backendin /api/open -endpointiin
   const getPreviewUrl = useCallback((f: FileInfo) => {
     const base = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/+$/g, "");
@@ -150,18 +145,6 @@ export default function HomePage() {
 
   if (loading) return <p className="center muted">Ladataan…</p>;
   if (error) return <p className="center error">Virhe: {error}</p>;
-  if (!current) {
-    return (
-      <main className="stage">
-        <h1 className="title">Ei enempää kortteja. Tiedostot nuoltu puhtaaksi. ✅
-        </h1>
-        <p className="center">
-        Sulje selain tai lataa sivu uudelleen aloittaaksesi alusta.
-        </p>
-      </main>
-    );
-  }
-
   // Kortin inline-tyyli raahaukseen/rotaatioon
   const rotation = Math.max(-12, Math.min(12, dragX / 20));
   const cardStyle: React.CSSProperties =
@@ -179,6 +162,9 @@ export default function HomePage() {
   // Labelit (TRASH/KEEP) läpinäkyvinä pyyhkäisyn mukaan
   const trashOpacity = Math.min(1, Math.max(0, (-dragX - 30) / threshold));
   const keepOpacity = Math.min(1, Math.max(0, (dragX - 30) / threshold));
+
+  const showEmptyState = !current;
+  const counterValue = showEmptyState ? files.length : idx + 1;
 
   return (
     <main className="stage">
@@ -216,43 +202,54 @@ export default function HomePage() {
           )}
         </div>
         <div className="counter">
-          {idx + 1}/{files.length}
+          {counterValue}/{files.length}
         </div>
       </header>
 
-      <div className="stack">
-        {files.slice(idx + 1, idx + 3).map((f, i) => (
-          <div key={f.path} className={`card shadow-${i + 1}`} aria-hidden />
-        ))}
+      {showEmptyState ? (
+        <section className="empty-state">
+          <h1 className="title">Ei enempää kortteja. Tiedostot nuoltu puhtaaksi. ✅</h1>
+          <p className="center">
+            Valitse yläreunan valikosta toinen kansio jatkaaksesi selaamista.
+          </p>
+        </section>
+      ) : (
+        <>
+          <div className="stack">
+            {files.slice(idx + 1, idx + 3).map((f, i) => (
+              <div key={f.path} className={`card shadow-${i + 1}`} aria-hidden />
+            ))}
 
-        <Card
-          file={current}
-          style={cardStyle}
-          dragging={dragging}
-          trashOpacity={trashOpacity}
-          keepOpacity={keepOpacity}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          anim={anim}
-          previewUrl={getPreviewUrl(current)}
-        />
-      </div>
+            <Card
+              file={current}
+              style={cardStyle}
+              dragging={dragging}
+              trashOpacity={trashOpacity}
+              keepOpacity={keepOpacity}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              anim={anim}
+              previewUrl={getPreviewUrl(current)}
+            />
+          </div>
 
-      <ActionsBar
-        onTrash={async () => {
-          setAnim("left");
-          await new Promise((r) => setTimeout(r, 100));
-          await trashCurrent();
-        }}
-        onKeep={async () => {
-          setAnim("right");
-          await new Promise((r) => setTimeout(r, 100));
-          keepCurrent();
-        }}
-        remaining={remaining}
-      />
+          <ActionsBar
+            onTrash={async () => {
+              setAnim("left");
+              await new Promise((r) => setTimeout(r, 100));
+              await trashCurrent();
+            }}
+            onKeep={async () => {
+              setAnim("right");
+              await new Promise((r) => setTimeout(r, 100));
+              keepCurrent();
+            }}
+            remaining={remaining}
+          />
+        </>
+      )}
     </main>
   );
 }

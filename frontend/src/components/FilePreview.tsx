@@ -33,6 +33,7 @@ export function FilePreview({ file, previewUrl }: { file: FileInfo; previewUrl: 
     return (
       <div className="media">
         {/* Kuva suoraan; ei Next Imagea tässä */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={previewUrl}
           alt={file.name}
@@ -143,8 +144,9 @@ function TextPreview({ url }: { url: string }) {
         // Rajoita kevyeksi (~64KB)
         const buf = await blob.slice(0, 64 * 1024).text();
         if (alive) setState({ text: buf });
-      } catch (e: any) {
-        if (alive) setState({ err: String(e) });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (alive) setState({ err: message });
       }
     })();
     return () => {
